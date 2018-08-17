@@ -151,7 +151,7 @@ void reconnect() {
 
 /*****************MQTT Listener******************************************************/
 void callback(char* topic, byte* payload, unsigned int length2){
-      send_status();
+      //send_status();
       Serial.print("Message arrived in topic: ");
       Serial.println(topic);
       Serial.print("Message: ");
@@ -264,7 +264,7 @@ void loop() {
   }
   client.loop();
 
-//    nj_rainbow();
+    nj_rainbow();
 //  candle();
 //    bloodDrip (strip.Color(80,0,0),strip.Color(0,0,0), 50); // Red
 //  colorWipe(strip.Color(255, 0, 0), 50); // Red
