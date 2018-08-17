@@ -263,8 +263,8 @@ void loop() {
   client.loop();
 
 //    nj_rainbow();
-  candle();
- // bloodDrip (strip.Color(80,0,0),strip.Color(0,0,0), 50); // Red
+//  candle();
+    bloodDrip (strip.Color(80,0,0),strip.Color(0,0,0), 50); // Red
 //  colorWipe(strip.Color(255, 0, 0), 50); // Red
 //  colorWipe(strip.Color(0, 255, 0), 50); // Green
 //  colorWipe(strip.Color(0, 0, 255), 50); // Blue
