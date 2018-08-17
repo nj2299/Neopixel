@@ -151,6 +151,7 @@ void reconnect() {
 
 /*****************MQTT Listener******************************************************/
 void callback(char* topic, byte* payload, unsigned int length2){
+      send_status();
       Serial.print("Message arrived in topic: ");
       Serial.println(topic);
       Serial.print("Message: ");
