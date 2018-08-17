@@ -23,7 +23,7 @@
 #define LED_COUNT 12
 #define LED_PIN D2    //control pin from ESP
 #define TIMER_MS 5000
-#define MQTT_KEEPALIVE 60
+#define MQTT_KEEPALIVE 120
 
 
 
@@ -38,6 +38,7 @@ const char* topic_pub = "OLAF/status";
 const char* topic_sub_firmware = "OLAF/commands/firmware";  //listen for firmware update
 unsigned long last_change = 0;
 unsigned long now = 0;
+//int updatenow = 0 ;
 
 WiFiClient espClient;         //wifi client
 PubSubClient client(espClient); //MQTT client requires wifi client
@@ -276,7 +277,7 @@ void loop() {
 
 //  rainbow(20);
 //  rainbowCycle(20);
-  theaterChaseRainbow(50);
+//  theaterChaseRainbow(50);
 
 }
 
