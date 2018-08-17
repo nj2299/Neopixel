@@ -1,12 +1,8 @@
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-#include <WS2812FX.h>
 
-#define LED_COUNT 12
-#define LED_PIN D2    //control pin from ESP
 
-#define TIMER_MS 5000
 
 
 #define MQTT_KEEPALIVE 60
@@ -16,8 +12,7 @@ const char* password = "Co!!eenandNei!";
 const char* mqttServer = "192.168.1.13";
 const int mqttPort = 1883;
 const char* clientName = "Office_Lights";
-const char* topic_sub_color = "Lights/office/commands/color";  //listen to this topic
-const char* topic_sub_mode = "Lights/office/commands/mode";  //listen to this topic
+const char* topic_sub = "Lights/office/commands";  //listen to this topic
 const char* topic_pub = "lights/office/status";
 unsigned long last_change = 0;
 unsigned long now = 0;
@@ -26,17 +21,6 @@ WiFiClient espClient;         //wifi client
 PubSubClient client(espClient); //MQTT client requires wifi client
 
 
-
-// Parameter 1 = number of pixels in strip
-// Parameter 2 = Arduino pin number (most are valid)
-// Parameter 3 = pixel type flags, add together as needed:
-//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-//current string uses GRBW
-WS2812FX ws2812fx = WS2812FX(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
 
 
 
@@ -105,81 +89,35 @@ void reconnect() {
 }
 
 /*****************MQTT Listener******************************************************/
-void callback(char* topic, byte* payload, unsigned int length2){
+void callback(char* topic, byte* payload, unsigned int length){
       Serial.print("Message arrived in topic: ");
       Serial.println(topic);
       Serial.print("Message: ");
       
-      for(int i = 0; i<length2;i++){
+      for(int i = 0; i<length;i++){
       Serial.print((char)payload[i]);
       }
       Serial.println ("");
     
-       payload[length2] = 0;
-  
-  if (strcmp(topic,"Lights/office/commands/color")==0)
-  {   
-        StaticJsonBuffer<300> JSONbuffer; 
-        String inData = String((char*)payload);
-        JsonObject& root = JSONbuffer.parseObject(inData);
-
-        if (!root.success()){
-          Serial.println("ERROR");
-          return;
-        }
+       payload[length] = 0;
       
-      const char* color = root["color"];
-      ws2812fx.setColor(strtoul(color, NULL, 16));
-  }
+}
 
 
-  if (strcmp(topic,"Lights/office/commands/mode")==0)
-  {   
+void mqtt_test(){
         StaticJsonBuffer<300> JSONbuffer; 
-        String inData = String((char*)payload);
-        JsonObject& root = JSONbuffer.parseObject(inData);
+        Serial.println("Neil Message");
+        JsonObject& JSONencoder = JSONbuffer.createObject();
+        JSONencoder["ID"] = clientName;
+        JSONencoder["WiFiSig"] = WiFi.RSSI();
+        char JSONmessageBuffer[300];
+        JSONencoder.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+        client.publish(topic_pub, JSONmessageBuffer);
+        Serial.println(JSONmessageBuffer);
 
-        if (!root.success()){
-          Serial.println("ERROR");
-          return;
-        }
       
-      int light_mode = root["mode"];
-      ws2812fx.setMode(light_mode);
-      send_status();
-  }
 
-
-
-         
 }
-
-/************************setup lights***********************************/
-void setup_lights(){
-  ws2812fx.init();
-  ws2812fx.setBrightness(50);
-  ws2812fx.setSpeed(1000);
-  ws2812fx.setColor(PURPLE);
-  ws2812fx.setMode(FX_MODE_STATIC);
-  ws2812fx.start();
-  ws2812fx.setMode(1);
-}
-
-/************************send status***********************************/
-
-void send_status(){
-  
-    StaticJsonBuffer<300> JSONbuffer;
-    JsonObject& JSONencoder = JSONbuffer.createObject();
-    JSONencoder["ID"] = clientName;
-    JSONencoder["MODE"] = ws2812fx.getMode();
-    char JSONmessageBuffer[300];
-    JSONencoder.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
-    client.publish(topic_pub, JSONmessageBuffer);
-    Serial.println(JSONmessageBuffer);
-}
-
-
 /************************SETUP***********************************/
 void setup() {
   Serial.begin(115200);
@@ -187,9 +125,9 @@ void setup() {
   client.setServer(mqttServer,mqttPort);
   ConnectBroker(client, clientName);    //connect to MQTT borker
   client.setCallback(callback);
-  client.subscribe(topic_sub_color); 
-  client.subscribe(topic_sub_mode); 
-  setup_lights();  
+  client.subscribe(topic_sub);
+  mqtt_test(); 
+ 
 
   
 
@@ -197,10 +135,24 @@ void setup() {
 
 /************************LOOP***********************************/
 void loop() {
-//now = millis();
+//  now = millis();
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
+
+/*
   ws2812fx.service();
+
+  if(now - last_change > TIMER_MS) {
+    //ws2812fx.setMode((ws2812fx.getMode() + 1) % ws2812fx.getModeCount());
+    ws2812fx.setMode(3);
+    last_change = now;
+    Serial.print(ws2812fx.getMode());
+    Serial.print("->");
+    Serial.println(ws2812fx.getModeCount());
+    send_status();
+  }
+ */ 
+
 }
