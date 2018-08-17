@@ -32,10 +32,10 @@ const char* password = "Co!!eenandNei!";
 const char* mqttServer = "192.168.1.13";
 const int mqttPort = 1883;
 const char* clientName = "Office_Lights";
-const char* topic_sub_color = "Lights/office/commands/color";  //listen to this topic
-const char* topic_sub_mode = "Lights/office/commands/mode";  //listen to this topic
-const char* topic_pub = "lights/office/status";
-const char* topic_sub_firmware = "Lights/office/commands/OLAFfirmware";  //listen for firmware update
+const char* topic_sub_color = "OLAF/commands/color";  //listen to this topic
+const char* topic_sub_mode = "OLAF/commands/mode";  //listen to this topic
+const char* topic_pub = "OLAF/status";
+const char* topic_sub_firmware = "OLAF/commands/firmware";  //listen for firmware update
 unsigned long last_change = 0;
 unsigned long now = 0;
 
@@ -161,7 +161,7 @@ void callback(char* topic, byte* payload, unsigned int length2){
     
        payload[length2] = 0;
   
-  if (strcmp(topic,"Lights/office/commands/color")==0)
+  if (strcmp(topic,"OLAF/commands/color")==0)
   {   
         StaticJsonBuffer<300> JSONbuffer; 
         String inData = String((char*)payload);
@@ -177,7 +177,7 @@ void callback(char* topic, byte* payload, unsigned int length2){
   }
 
 
-  if (strcmp(topic,"Lights/office/commands/mode")==0)
+  if (strcmp(topic,"OLAF/commands/mode")==0)
   {   
         StaticJsonBuffer<300> JSONbuffer; 
         String inData = String((char*)payload);
@@ -195,7 +195,7 @@ void callback(char* topic, byte* payload, unsigned int length2){
 
 
 
-  if (strcmp(topic,"Lights/office/commands/OLAFfirmware")==0)
+  if (strcmp(topic,"OLAF/commands/firmware")==0)
   {   
         StaticJsonBuffer<300> JSONbuffer; 
         String inData = String((char*)payload);
@@ -264,7 +264,7 @@ void loop() {
 
 //    nj_rainbow();
 //  candle();
-    bloodDrip (strip.Color(80,0,0),strip.Color(0,0,0), 50); // Red
+//    bloodDrip (strip.Color(80,0,0),strip.Color(0,0,0), 50); // Red
 //  colorWipe(strip.Color(255, 0, 0), 50); // Red
 //  colorWipe(strip.Color(0, 255, 0), 50); // Green
 //  colorWipe(strip.Color(0, 0, 255), 50); // Blue
@@ -276,7 +276,7 @@ void loop() {
 
 //  rainbow(20);
 //  rainbowCycle(20);
-//  theaterChaseRainbow(50);
+  theaterChaseRainbow(50);
 
 }
 
