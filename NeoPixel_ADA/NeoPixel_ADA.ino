@@ -1,3 +1,13 @@
+/*Top Comment Lines
+ * 
+ * 
+ * blah
+ * 
+ * 
+ * 
+ */
+
+
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
@@ -25,7 +35,7 @@ const char* clientName = "Office_Lights";
 const char* topic_sub_color = "Lights/office/commands/color";  //listen to this topic
 const char* topic_sub_mode = "Lights/office/commands/mode";  //listen to this topic
 const char* topic_pub = "lights/office/status";
-const char* topic_sub_firmware = "Lights/office/commands/firmware";  //listen for firmware update
+const char* topic_sub_firmware = "Lights/office/commands/OLAFfirmware";  //listen for firmware update
 unsigned long last_change = 0;
 unsigned long now = 0;
 
@@ -80,7 +90,7 @@ void firmware_update(){
  // wait for WiFi connection
     if((WiFiMulti.run() == WL_CONNECTED)) {
 
-        t_httpUpdate_return ret = ESPhttpUpdate.update("http://107.190.105.82/office_ada");
+        t_httpUpdate_return ret = ESPhttpUpdate.update("http://nj2299.duckdns.org/updateOLAF");
         //t_httpUpdate_return  ret = ESPhttpUpdate.update("https://server/file.bin");
 
         switch(ret) {
@@ -185,7 +195,7 @@ void callback(char* topic, byte* payload, unsigned int length2){
 
 
 
-  if (strcmp(topic,"Lights/office/commands/firmware")==0)
+  if (strcmp(topic,"Lights/office/commands/OLAFfirmware")==0)
   {   
         StaticJsonBuffer<300> JSONbuffer; 
         String inData = String((char*)payload);
